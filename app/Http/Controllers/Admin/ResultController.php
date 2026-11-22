@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Exam;
+use App\Models\ExamProctorLog;
 use App\Models\ExamSession;
 use App\Models\StudentAnswer;
 use Illuminate\Http\Request;
@@ -32,7 +33,13 @@ class ResultController extends Controller
     public function show(ExamSession $session)
     {
         $session->load(['student', 'exam.subject', 'exam.questions', 'answers.question', 'violations']);
-        return view('admin.results.show', compact('session'));
+
+        $proctorLogs = ExamProctorLog::where('exam_id', $session->exam_id)
+            ->where('user_id', $session->student_id)
+            ->latest()
+            ->get();
+
+        return view('admin.results.show', compact('session', 'proctorLogs'));
     }
 
     public function grade(Request $request, ExamSession $session)

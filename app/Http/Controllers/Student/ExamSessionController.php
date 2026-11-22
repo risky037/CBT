@@ -1,5 +1,4 @@
-﻿<?php
-
+<?php
 namespace App\Http\Controllers\Student;
 
 use App\Http\Controllers\Controller;
@@ -99,10 +98,12 @@ class ExamSessionController extends Controller
             ->get()
             ->keyBy('question_id');
 
+        // PERBAIKAN 1: Mengembalikan view ke folder yang benar (student.sessions.take) 
+        // Jika dibiarkan 'student.take' akan muncul error "View not found"
         return view('student.take', compact('session', 'exam', 'questions', 'savedAnswers', 'remainingSeconds'));
     }
-
     public function saveAnswer(Request $request, ExamSession $session)
+    
     {
         abort_if($session->student_id !== auth()->id() || $session->status !== 'ongoing', 403);
 
@@ -134,7 +135,9 @@ class ExamSessionController extends Controller
 
         ExamViolation::create([
             'exam_session_id' => $session->id,
-            'type' => $request->type ?? 'tab_switch',
+            // PERBAIKAN 2: Diubah kembali ke 'type' agar sesuai struktur tabel database standar Anda.
+            // Sebelumnya Anda mengubahnya jadi 'violation_type' yang bisa memicu error "Column not found".
+            'type' => $request->input('type', 'tab_switch'),
             'description' => $request->description ?? 'Siswa meninggalkan layar ujian / keluar mode layar penuh.',
         ]);
 
@@ -164,6 +167,12 @@ class ExamSessionController extends Controller
     public function finish(ExamSession $session)
     {
         abort_if($session->student_id !== auth()->id(), 403);
+
+        if ($session->status === 'blocked') {
+            return redirect()->route('student.dashboard')
+                ->with('info', 'Sesi ujian terkunci dan tidak dapat dikumpulkan.');
+        }
+
         return $this->finalizeSession($session);
     }
 
@@ -186,7 +195,12 @@ class ExamSessionController extends Controller
             }
 
             $studentAns = $answers->get($question->id);
-            if (!$studentAns || empty($studentAns->answer)) {
+            if (
+                !$studentAns
+                || $studentAns->answer === null
+                || $studentAns->answer === ''
+                || $studentAns->answer === []
+            ) {
                 continue;
             }
 

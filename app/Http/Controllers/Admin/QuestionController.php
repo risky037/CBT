@@ -13,6 +13,29 @@ class QuestionController extends Controller
     public function index(Request $request)
     {
         $activeType = $request->get('type', 'pilihan_ganda');
+        
+        // Daftar mata pelajaran bawaan
+        $defaultSubjects = [
+            'Pendidikan Agama Islam',
+            'Pendidikan Pancasila',
+            'Bahasa Indonesia',
+            'Matematika',
+            'Ilmu Pengetahuan Alam (IPA)',
+            'Ilmu Pengetahuan Sosial (IPS)',
+            'Bahasa Inggris',
+            'PJOK',
+            'Informatika',
+            'Seni Budaya',
+            'Prakarya',
+            'Bahasa Sunda'
+        ];
+
+        // Masukkan ke database jika belum ada
+        foreach ($defaultSubjects as $subjectName) {
+            Subject::firstOrCreate(['name' => $subjectName]);
+        }
+
+        // Ambil semua mata pelajaran dari database dan urutkan abjad
         $subjects = Subject::orderBy('name')->get();
 
         $questions = Question::with('subject')
@@ -91,7 +114,8 @@ class QuestionController extends Controller
 
         Question::create([
             'subject_id'     => $request->subject_id,
-            'created_by'     => auth()->id(),
+            'kelas'      => 'required|string',
+            'teacher_id'     => auth()->id(),
             'type'           => $request->type,
             'content'        => $request->content,
             'options'        => $options,
@@ -108,6 +132,7 @@ class QuestionController extends Controller
     {
         $request->validate([
             'subject_id' => 'required|exists:subjects,id',
+            
             'type'       => 'required|in:pilihan_ganda,isian_singkat,menjodohkan,esai',
             'topic'      => 'required|string|max:255',
             'difficulty' => 'required|in:mudah,sedang,sulit',
@@ -115,6 +140,7 @@ class QuestionController extends Controller
             'score'      => 'required|numeric|min:1',
         ]);
 
+        // Karena menggunakan model gemini-3.8-flash tidak tersedia, kita gunakan gemini-1.5-flash
         $apiKey = env('GEMINI_API_KEY');
         if (!$apiKey) {
             return back()->withErrors(['ai' => 'GEMINI_API_KEY belum diisi di file .env.']);
@@ -138,7 +164,7 @@ class QuestionController extends Controller
                 'force_ip_resolve' => 'v4',
                 'connect_timeout'  => 20,
             ])->timeout(90)->post(
-                "https://generativelanguage.googleapis.com/v1beta/models/gemini-3.8-flash:generateContent?key={$apiKey}",
+                "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key={$apiKey}",
                 [
                     'contents' => [
                         ['parts' => [['text' => $prompt]]]
@@ -198,6 +224,7 @@ class QuestionController extends Controller
 
             Question::create([
                 'subject_id'     => $request->subject_id,
+                'kelas'          => $request->kelas,
                 'created_by'     => auth()->id(),
                 'type'           => $type,
                 'content'        => $item['content'],

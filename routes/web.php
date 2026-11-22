@@ -7,7 +7,9 @@ use App\Http\Controllers\Admin\ExamController;
 use App\Http\Controllers\Admin\MonitorController;
 use App\Http\Controllers\Admin\ResultController;
 use App\Http\Controllers\Admin\StudentController;
+use App\Http\Controllers\Admin\SettingController; 
 use App\Http\Controllers\Student\ExamSessionController;
+use App\Http\Controllers\Api\ProctorController; // Import ProctorController
 
 Route::get('/', fn() => redirect()->route('login'));
 
@@ -44,6 +46,13 @@ Route::middleware(['auth', 'role:admin,guru'])->prefix('admin')->name('admin.')-
     Route::delete('/students/{student}', [StudentController::class, 'destroy'])->name('students.destroy');
     Route::get('/students/template', [StudentController::class, 'downloadTemplate'])->name('students.template');
     Route::post('/students/import', [StudentController::class, 'importCsv'])->name('students.import');
+
+    // Menu Pengaturan (Ganti Password & Aplikasi)
+    Route::get('/settings', [SettingController::class, 'index'])->name('settings.index');
+    Route::put('/settings/password', [SettingController::class, 'updatePassword'])->name('settings.password');
+    Route::post('/settings/password/reset', [SettingController::class, 'resetPassword'])->name('settings.password.reset');
+    Route::post('/settings/app', [SettingController::class, 'updateApp'])->name('settings.app');
+    Route::put('/settings/profile', [SettingController::class, 'updateProfile'])->name('settings.profile');
 });
 
 // Area Siswa
@@ -54,4 +63,9 @@ Route::middleware(['auth', 'role:siswa'])->prefix('student')->name('student.')->
     Route::post('/sessions/{session}/answer', [ExamSessionController::class, 'saveAnswer'])->name('sessions.answer');
     Route::post('/sessions/{session}/violation', [ExamSessionController::class, 'logViolation'])->name('sessions.violation');
     Route::post('/sessions/{session}/finish', [ExamSessionController::class, 'finish'])->name('sessions.finish');
+});
+
+// Endpoint Tambahan (Dilindungi Auth agar fungsi auth()->id() terbaca)
+Route::middleware('auth')->group(function () {
+    Route::post('/proctor/upload', [ProctorController::class, 'uploadSnapshot'])->name('proctor.upload');
 });

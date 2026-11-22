@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Exam;
 use App\Models\ExamSession;
+use App\Models\ExamProctorLog;
 use Illuminate\Http\Request;
 
 class MonitorController extends Controller
@@ -25,7 +26,22 @@ class MonitorController extends Controller
                 }])
                 ->where('exam_id', $selectedExamId)
                 ->orderByDesc('updated_at')
-                ->get();
+                ->get()
+                ->map(function ($session) use ($selectedExamId) {
+                    // Ambil 1 foto kamera terbaru siswa pada ujian ini
+                    $session->latest_photo = ExamProctorLog::where('exam_id', $selectedExamId)
+                        ->where('user_id', $session->student_id)
+                        ->latest()
+                        ->first();
+
+                    // Ambil seluruh riwayat foto kamera untuk bukti pelanggaran
+                    $session->all_photos = ExamProctorLog::where('exam_id', $selectedExamId)
+                        ->where('user_id', $session->student_id)
+                        ->latest()
+                        ->get();
+
+                    return $session;
+                });
         }
 
         return view('admin.monitor.index', compact('exams', 'selectedExam', 'sessions'));
@@ -48,7 +64,7 @@ class MonitorController extends Controller
         $totalScore = $session->answers()->sum('score_obtained');
 
         $session->update([
-            'status' => 'completed',
+            'status' => 'finished', // Disamakan dengan ExamSessionController agar terbaca di menu Hasil
             'finished_at' => now(),
             'total_score' => $totalScore,
         ]);
