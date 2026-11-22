@@ -12,22 +12,22 @@
 <div class="max-w-4xl mx-auto p-4 md:p-6 space-y-6 select-none">
     
     <!-- Header Ujian Sticky -->
-    <header class="bg-white border border-slate-200 sticky top-0 z-30 px-6 py-3.5 shadow-sm rounded-2xl">
-        <div class="flex flex-wrap items-center justify-between gap-4">
-            <div>
-                <h1 class="font-bold text-slate-800 text-base md:text-lg">{{ $exam->title }}</h1>
-                <p class="text-xs text-slate-500">{{ $exam->subject->name ?? '' }} • {{ auth()->user()->name }}</p>
+    <header class="bg-white border border-slate-200 sticky top-0 z-20 px-4 sm:px-6 py-3 shadow-sm rounded-2xl">
+        <div class="flex flex-wrap items-center justify-between gap-3">
+            <div class="overflow-hidden">
+                <h1 class="font-bold text-slate-800 text-sm sm:text-base md:text-lg truncate">{{ $exam->title }}</h1>
+                <p class="text-xs text-slate-500 truncate">{{ $exam->subject->name ?? '' }} • {{ auth()->user()->name }}</p>
             </div>
 
-            <div class="flex items-center gap-3">
+            <div class="flex items-center gap-2 sm:gap-3 shrink-0">
                 <span id="saveStatus" class="text-xs text-emerald-600 font-medium hidden md:inline">Tersimpan otomatis</span>
 
-                <div class="px-4 py-1.5 rounded-xl bg-slate-900 text-white font-mono text-sm font-bold" id="timerDisplay">
+                <div class="px-3 sm:px-4 py-1.5 rounded-xl bg-slate-900 text-white font-mono text-xs sm:text-sm font-bold" id="timerDisplay">
                     --:--:--
                 </div>
 
                 <button type="button" onclick="openConfirmModal()"
-                        class="px-4 py-2 rounded-xl bg-emerald-600 text-white text-xs md:text-sm font-semibold hover:bg-emerald-700 transition">
+                        class="px-3 sm:px-4 py-2 rounded-xl bg-emerald-600 text-white text-xs sm:text-sm font-semibold hover:bg-emerald-700 transition">
                     Selesai Ujian
                 </button>
             </div>
@@ -41,7 +41,7 @@
                 $existing = $savedAnswers->get($q->id)?->answer;
                 $options = is_array($q->options) ? $q->options : (json_decode($q->options, true) ?? []);
             @endphp
-            <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm" id="soal-{{ $index + 1 }}">
+            <div class="bg-white p-5 sm:p-6 rounded-2xl border border-slate-200 shadow-sm" id="soal-{{ $index + 1 }}">
                 <div class="flex items-center justify-between mb-3 pb-2 border-b border-slate-100">
                     <span class="px-3 py-1 rounded-lg bg-indigo-50 text-indigo-700 text-xs font-bold">
                         Soal No. {{ $index + 1 }}
@@ -49,7 +49,7 @@
                     <span class="text-xs text-slate-400 uppercase font-semibold">{{ str_replace('_', ' ', $q->type) }}</span>
                 </div>
 
-                <div class="text-slate-800 text-base leading-relaxed mb-5">
+                <div class="text-slate-800 text-sm sm:text-base leading-relaxed mb-5">
                     {!! $q->content !!}
                 </div>
 
@@ -62,7 +62,7 @@
                                 <input type="radio" name="q_{{ $q->id }}" value="{{ $optVal }}"
                                        {{ (string)$existing === (string)$optVal ? 'checked' : '' }}
                                        onchange="saveAnswer({{ $q->id }}, this.value)"
-                                       class="mt-1 text-indigo-600">
+                                       class="mt-1 text-indigo-600 shrink-0">
                                 <span class="text-sm text-slate-700">
                                     @if(is_string($key)) <strong class="mr-1">{{ $key }}.</strong> @endif
                                     {{ $label }}
@@ -76,7 +76,7 @@
                     <input type="text" value="{{ is_string($existing) ? $existing : '' }}"
                            placeholder="Ketik jawaban singkat Anda di sini..."
                            onblur="saveAnswer({{ $q->id }}, this.value)"
-                           class="w-full rounded-xl border border-slate-300 px-4 py-2.5 text-sm">
+                           class="w-full rounded-xl border border-slate-300 px-4 py-2.5 text-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none">
 
                 <!-- Input Menjodohkan -->
                 @elseif($q->type === 'menjodohkan')
@@ -90,7 +90,7 @@
                             <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 p-3 rounded-xl bg-slate-50 border border-slate-200">
                                 <span class="text-sm font-medium text-slate-700">{{ $left }}</span>
                                 <select data-left="{{ $left }}" onchange="saveMatchAnswer({{ $q->id }})"
-                                        class="rounded-xl border border-slate-300 text-sm px-3 py-1.5 bg-white">
+                                        class="w-full sm:w-auto rounded-xl border border-slate-300 text-sm px-3 py-1.5 bg-white focus:ring-2 focus:ring-indigo-500">
                                     <option value="">-- Pilih Pasangan --</option>
                                     @foreach($rightItems as $right)
                                         <option value="{{ $right }}" {{ ($existingMap[$left] ?? '') === $right ? 'selected' : '' }}>
@@ -106,36 +106,36 @@
                 @else
                     <textarea rows="4" placeholder="Tuliskan jawaban uraian Anda di sini..."
                               onblur="saveAnswer({{ $q->id }}, this.value)"
-                              class="w-full rounded-xl border border-slate-300 p-3.5 text-sm">{{ is_string($existing) ? $existing : '' }}</textarea>
+                              class="w-full rounded-xl border border-slate-300 p-3.5 text-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none">{{ is_string($existing) ? $existing : '' }}</textarea>
                 @endif
             </div>
         @endforeach
     </div>
 
-    <!-- Tombol Selesai Bawah -->
-    <div class="flex justify-end pb-10 mt-6">
+    <!-- Tombol Selesai Bawah (Diberi padding bawah lega agar tidak tertutup box kamera) -->
+    <div class="flex justify-end pb-28 sm:pb-20 mt-6">
         <button type="button" onclick="openConfirmModal()"
-                class="px-6 py-3 rounded-xl bg-emerald-600 text-white font-semibold text-sm hover:bg-emerald-700 shadow-sm">
+                class="px-6 py-3 rounded-xl bg-emerald-600 text-white font-semibold text-sm hover:bg-emerald-700 shadow-sm transition">
             Kumpulkan & Selesaikan Ujian
         </button>
     </div>
 
-    <!-- Elemen Kamera Pengawas (Proctoring) -->
-    <div class="fixed bottom-4 right-4 border-2 border-indigo-500 rounded-xl overflow-hidden shadow-lg z-40 bg-white">
-        <div class="bg-indigo-500 text-white text-[10px] text-center font-bold py-1 tracking-wider">PENGAWASAN AKTIF</div>
-        <video id="webcam" autoplay playsinline width="160" height="120" class="object-cover bg-slate-900"></video>
+    <!-- Elemen Kamera Pengawas (Proctoring) - Responsive & Non-blocking -->
+    <div class="fixed bottom-3 right-3 sm:bottom-4 sm:right-4 border-2 border-indigo-500 rounded-xl overflow-hidden shadow-lg z-30 bg-white">
+        <div class="bg-indigo-500 text-white text-[9px] sm:text-[10px] text-center font-bold py-0.5 sm:py-1 tracking-wider">PENGAWASAN AKTIF</div>
+        <video id="webcam" autoplay playsinline width="160" height="120" class="w-28 h-21 sm:w-36 sm:h-27 md:w-40 md:h-30 object-cover bg-slate-900"></video>
         <canvas id="canvas" class="hidden"></canvas>
     </div>
 
     <!-- Modal Peringatan Pelanggaran -->
     <div id="violationModal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-rose-950/80 backdrop-blur-sm p-4">
-        <div class="bg-white rounded-3xl max-w-md w-full p-6 text-center shadow-2xl border-2 border-rose-500">
+        <div class="bg-white rounded-3xl max-w-md w-full max-h-[90vh] overflow-y-auto p-6 text-center shadow-2xl border-2 border-rose-500">
             <h2 class="text-lg font-bold text-rose-600">Peringatan Pelanggaran!</h2>
             <p id="violationText" class="text-sm text-slate-600 mt-2">
                 Anda terdeteksi meninggalkan layar ujian. Pelanggaran dicatat oleh sistem.
             </p>
             <button type="button" onclick="document.getElementById('violationModal').classList.add('hidden')"
-                    class="mt-5 w-full py-2.5 rounded-xl bg-rose-600 text-white text-sm font-semibold hover:bg-rose-700">
+                    class="mt-5 w-full py-2.5 rounded-xl bg-rose-600 text-white text-sm font-semibold hover:bg-rose-700 transition">
                 Mengerti & Kembali ke Ujian
             </button>
         </div>
@@ -143,18 +143,18 @@
 
     <!-- Modal Konfirmasi Selesai Ujian -->
     <div id="confirmModal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 backdrop-blur-sm p-4">
-        <div class="bg-white rounded-3xl max-w-md w-full p-6 text-center shadow-2xl">
+        <div class="bg-white rounded-3xl max-w-md w-full max-h-[90vh] overflow-y-auto p-6 text-center shadow-2xl">
             <h2 class="text-lg font-bold text-slate-800">Akhiri & Kumpulkan Ujian?</h2>
             <p class="text-sm text-slate-500 mt-2">
                 Pastikan seluruh soal sudah diperiksa. Setelah dikumpulkan, Anda tidak dapat mengubah jawaban kembali.
             </p>
             <div class="mt-6 flex gap-3">
                 <button type="button" onclick="closeConfirmModal()"
-                        class="flex-1 py-2.5 rounded-xl border border-slate-300 text-sm font-semibold text-slate-700 hover:bg-slate-50">
+                        class="flex-1 py-2.5 rounded-xl border border-slate-300 text-sm font-semibold text-slate-700 hover:bg-slate-50 transition">
                     Periksa Lagi
                 </button>
                 <button type="button" onclick="submitExamNow()"
-                        class="flex-1 py-2.5 rounded-xl bg-emerald-600 text-white text-sm font-semibold hover:bg-emerald-700">
+                        class="flex-1 py-2.5 rounded-xl bg-emerald-600 text-white text-sm font-semibold hover:bg-emerald-700 transition">
                     Ya, Selesai
                 </button>
             </div>
