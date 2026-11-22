@@ -3,12 +3,12 @@
 
 @section('content')
 <div class="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm">
-    <div class="flex items-center justify-between mb-6">
+    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
         <div>
             <h3 class="text-base font-bold text-slate-800">Daftar Paket Ujian</h3>
             <p class="text-xs text-slate-500">Kelola jadwal, token masuk siswa, dan komposisi soal ujian</p>
         </div>
-        <a href="{{ route('admin.exams.create') }}" class="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-medium rounded-xl shadow-sm transition">
+        <a href="{{ route('admin.exams.create') }}" class="inline-flex items-center justify-center px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-medium rounded-xl shadow-sm transition">
             + Buat Ujian
         </a>
     </div>
@@ -31,7 +31,7 @@
                     <p class="text-xs text-slate-500 mb-4">{{ $exam->subject->name }} • {{ $exam->kelas }} • {{ $exam->duration }} Menit</p>
                 </div>
 
-                <div class="pt-3 border-t border-slate-100 flex items-center justify-between text-xs">
+                <div class="pt-3 border-t border-slate-100 flex flex-wrap items-center justify-between gap-2 text-xs">
                     <span class="text-slate-600 font-medium">{{ $exam->questions->count() }} Soal Terpasang</span>
                     <div class="flex items-center gap-3">
                         <a href="{{ route('admin.exams.show', $exam->id) }}" class="text-indigo-600 hover:text-indigo-800 font-semibold">Kelola Soal & Token</a>

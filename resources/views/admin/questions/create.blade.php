@@ -70,7 +70,7 @@
         <div x-show="type === 'menjodohkan'" class="p-4 bg-slate-50 rounded-xl border border-slate-200 space-y-3">
             <h3 class="font-semibold text-sm text-slate-700">Pasangan Pernyataan & Jawaban (Akan diacak otomatis saat ujian)</h3>
             @for($i = 0; $i < 3; $i++)
-                <div class="grid grid-cols-2 gap-3">
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
                     <input type="text" name="match_left[]" placeholder="Pernyataan Kiri {{ $i+1 }}" class="px-3 py-1.5 border border-slate-300 rounded-lg text-sm">
                     <input type="text" name="match_right[]" placeholder="Pasangan Benar {{ $i+1 }}" class="px-3 py-1.5 border border-slate-300 rounded-lg text-sm">
                 </div>
@@ -88,9 +88,9 @@
             Soal tipe <strong>Uraian</strong> akan dikoreksi dan diberikan skor secara manual oleh Guru melalui menu <strong>Hasil</strong> setelah ujian selesai.
         </div>
 
-        <div class="flex items-center gap-3 pt-2">
-            <button type="submit" class="px-6 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-medium rounded-xl transition">Simpan Soal</button>
-            <a href="{{ route('admin.questions.index') }}" class="px-6 py-2.5 border border-slate-300 text-slate-700 text-sm font-medium rounded-xl hover:bg-slate-50">Batal</a>
+        <div class="flex flex-wrap items-center gap-3 pt-2">
+            <button type="submit" class="px-6 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-medium rounded-xl transition shadow-sm">Simpan Soal</button>
+            <a href="{{ route('admin.questions.index') }}" class="px-6 py-2.5 border border-slate-300 text-slate-700 text-sm font-medium rounded-xl hover:bg-slate-50 transition">Batal</a>
         </div>
     </form>
 </div>
