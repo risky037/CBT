@@ -56,11 +56,11 @@
                     </div>
                 </div>
 
-                <div class="flex items-center justify-between pt-2 border-t border-slate-100">
-                    <div class="text-xs text-slate-500">
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pt-2 border-t border-slate-100">
+                    <div class="text-xs text-slate-500 break-words">
                         Kunci: <strong class="text-emerald-600">{{ is_array($ans->question->correct_answer) ? json_encode($ans->question->correct_answer) : ($ans->question->correct_answer ?? '-') }}</strong>
                     </div>
-                    <div class="flex items-center gap-2">
+                    <div class="flex items-center gap-2 self-end sm:self-auto shrink-0">
                         <label class="text-xs font-semibold text-slate-600">Skor Diperoleh:</label>
                         <input type="number" step="0.5" min="0" max="{{ $ans->question->score }}"
                                name="scores[{{ $ans->id }}]" value="{{ $ans->score_obtained ?? 0 }}"
