@@ -168,9 +168,9 @@
     <!-- Daftar Soal Tersimpan -->
     <div class="space-y-3">
         @forelse($questions as $q)
-            <div class="bg-white p-5 rounded-2xl border border-slate-200 flex items-start justify-between gap-4">
-                <div class="space-y-2 flex-1">
-                    <div class="flex items-center gap-2 text-xs">
+            <div class="bg-white p-5 rounded-2xl border border-slate-200 flex items-start justify-between gap-4 shadow-sm">
+                <div class="space-y-2 flex-1 min-w-0">
+                    <div class="flex flex-wrap items-center gap-1.5 text-xs">
                         <span class="px-2.5 py-0.5 rounded-full bg-indigo-50 text-indigo-700 font-semibold">
                             {{ $q->subject->name ?? '-' }}
                         </span>
@@ -182,35 +182,35 @@
                         </span>
                     </div>
 
-                    <p class="text-sm text-slate-800 font-medium">{!! $q->content !!}</p>
+                    <p class="text-sm text-slate-800 font-medium break-words">{!! $q->content !!}</p>
 
                     @if($q->type === 'pilihan_ganda' && is_array($q->options))
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-1 text-xs text-slate-600 pt-1">
                             @foreach($q->options as $k => $v)
-                                <div class="{{ in_array($k, $q->correct_answer ?? []) ? 'text-emerald-700 font-bold' : '' }}">
+                                <div class="{{ in_array($k, $q->correct_answer ?? []) ? 'text-emerald-700 font-bold' : '' }} break-words">
                                     {{ $k }}. {{ $v }} {{ in_array($k, $q->correct_answer ?? []) ? '✓' : '' }}
                                 </div>
                             @endforeach
                         </div>
                     @elseif($q->type === 'isian_singkat')
-                        <p class="text-xs text-emerald-700 font-semibold">
+                        <p class="text-xs text-emerald-700 font-semibold break-words">
                             Kunci Valid: {{ implode(' | ', $q->correct_answer ?? []) }}
                         </p>
                     @elseif($q->type === 'menjodohkan' && is_array($q->correct_answer))
                         <div class="text-xs text-slate-600 space-y-1 pt-1">
                             @foreach($q->correct_answer as $kiri => $kanan)
-                                <div>• <strong>{{ $kiri }}</strong> &rarr; <span class="text-emerald-700 font-semibold">{{ $kanan }}</span></div>
+                                <div class="break-words">• <strong>{{ $kiri }}</strong> &rarr; <span class="text-emerald-700 font-semibold">{{ $kanan }}</span></div>
                             @endforeach
                         </div>
                     @elseif($q->type === 'esai' && !empty($q->correct_answer[0]))
-                        <p class="text-xs text-slate-500 italic">Rubrik: {{ $q->correct_answer[0] }}</p>
+                        <p class="text-xs text-slate-500 italic break-words">Rubrik: {{ $q->correct_answer[0] }}</p>
                     @endif
                 </div>
 
-                <form action="{{ route('admin.questions.destroy', $q->id) }}" method="POST" onsubmit="return confirm('Hapus soal ini?')">
+                <form action="{{ route('admin.questions.destroy', $q->id) }}" method="POST" onsubmit="return confirm('Hapus soal ini?')" class="shrink-0">
                     @csrf
                     @method('DELETE')
-                    <button type="submit" class="px-3 py-1.5 rounded-lg bg-rose-50 text-rose-600 text-xs font-semibold hover:bg-rose-100">
+                    <button type="submit" class="px-3 py-1.5 rounded-lg bg-rose-50 text-rose-600 text-xs font-semibold hover:bg-rose-100 transition">
                         Hapus
                     </button>
                 </form>
@@ -227,10 +227,10 @@
 
 <!-- Modal Generator Soal Otomatis AI -->
 <div id="aiModal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 backdrop-blur-sm p-4">
-    <div class="bg-white rounded-3xl max-w-lg w-full p-6 shadow-2xl">
+    <div class="bg-white rounded-3xl max-w-lg w-full max-h-[90vh] overflow-y-auto p-6 shadow-2xl">
         <div class="flex items-center justify-between mb-4">
             <h3 class="text-lg font-bold text-slate-800">✨ Generator Soal Otomatis AI</h3>
-            <button type="button" onclick="document.getElementById('aiModal').classList.add('hidden')" class="text-slate-400 hover:text-slate-600 text-xl">&times;</button>
+            <button type="button" onclick="document.getElementById('aiModal').classList.add('hidden')" class="text-slate-400 hover:text-slate-600 text-xl font-bold">&times;</button>
         </div>
 
         <form action="{{ route('admin.questions.generate-ai') }}" method="POST" class="space-y-4">
@@ -267,7 +267,7 @@
                        class="w-full rounded-xl border border-slate-300 px-3 py-2 text-sm">
             </div>
 
-            <div class="grid grid-cols-3 gap-3">
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
                 <div>
                     <label class="block text-xs font-semibold text-slate-600 mb-1">Tingkat Kesulitan</label>
                     <select name="difficulty" class="w-full rounded-xl border border-slate-300 px-3 py-2 text-sm">
@@ -290,11 +290,11 @@
 
             <div class="pt-2 flex justify-end gap-2">
                 <button type="button" onclick="document.getElementById('aiModal').classList.add('hidden')"
-                        class="px-4 py-2 rounded-xl border border-slate-300 text-sm font-semibold text-slate-600">
+                        class="px-4 py-2 rounded-xl border border-slate-300 text-sm font-semibold text-slate-600 hover:bg-slate-50 transition">
                     Batal
                 </button>
                 <button type="submit" onclick="this.innerText='Sedang Membuat Soal...'"
-                        class="px-5 py-2 rounded-xl bg-indigo-600 text-white text-sm font-semibold hover:bg-indigo-700">
+                        class="px-5 py-2 rounded-xl bg-indigo-600 text-white text-sm font-semibold hover:bg-indigo-700 transition">
                     Generate & Simpan
                 </button>
             </div>
